@@ -3,15 +3,15 @@
 - [x] Deploy
     1. install go & set gopath
     2. clone this repo & enter the project folder
-    3. run "chmod +x ./deploy & ./deploy"
+    3. run ```chmod +x ./deploy & ./deploy```
 
 - [ ] Create project
     1. mkdir for your project & cd to the folder
-    2. run solPack -c
+    2. run ```solpack -c```
 
-- [ ] Pack project
+- [x] Pack project
     1. enter the project folder
-    2. run solPack -b
+    2. run ```solpack -b```
 
-- [ ] Documentation
-    - solPack -h for help
+- [x] Documentation
+    - run ```solpack -h for help```
