@@ -3,7 +3,7 @@
 - [x] Deploy
     1. install go & set gopath
     2. clone this repo & enter the project folder
-    3. run ```chmod +x ./deploy & ./deploy```
+    3. run ```chmod +x ./deploy.sh & ./deploy.sh```
 
 - [ ] Create project
     1. mkdir for your project & cd to the folder
