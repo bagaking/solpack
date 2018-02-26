@@ -10,6 +10,9 @@ import (
 	"strings"
 )
  
+var (
+	entranceNames = []string { "main", "_" }
+)
 
 func main(){ 
 	var (
@@ -53,8 +56,26 @@ func isDir(path string) bool {
     return s.IsDir() 
 }
 
+func getFolderEntrance(pthFolder string) string {
+	defaultName := path.Base(pthFolder)
+	pth := fmt.Sprintf("%s/%s.sol", pthFolder, defaultName)
+	if !isExist(pth) {
+		for _, name := range entranceNames {
+			pth = fmt.Sprintf("%s/%s.sol", pthFolder, name)
+			if isExist(pth) {
+				break
+			}
+		}
+	}
+	return pth
+}
+
 func buildContracts(cpos string) {
+	
 	pthSrc := fmt.Sprintf("%s/src/main.sol", cpos)
+
+
+
 	code := readContracts(pthSrc, 0)
 	regpragma := regexp.MustCompile(`pragma.+;`) 
 	regcontinuesn := regexp.MustCompile(`[\n]+`) 
@@ -92,7 +113,7 @@ func readContracts(pth string, dep int) string {
 		} 
 		if isExist(realpath) {
 			if isDir(realpath) {
-				realpath = realpath+"/_.sol" 
+				realpath = getFolderEntrance(realpath)
 			} 
 			fmt.Printf("load file : %s \n", realpath)
 			src = strings.Replace(src, porigin, "\n// " + strings.Repeat("-- ", dep) + "import from " + realpath + " ======" + readContracts(realpath, dep + 1) + "\n", -1)
