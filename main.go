@@ -8,11 +8,16 @@ import (
 	"io/ioutil" 
 	"regexp"
 	"strings"
+	"encoding/json"
 )
  
 var (
 	entranceNames = []string { "main", "_" }
 )
+
+type buildConf struct  {
+	Exports []string	`json:"exports"`
+}
 
 func main(){ 
 	var (
@@ -26,7 +31,7 @@ func main(){
 	flag.Parse() 
 	fmt.Println(cpos)
 	if cmdBuild {
-		fmt.Printf("build contract for proj %s\n", cpos)
+		fmt.Printf("build contract for proj %s\n", cpos) 
 		buildContracts(cpos);
 	} else if cmdCreate {
 		fmt.Printf("build contract for proj %s\n", cpos)
@@ -71,12 +76,24 @@ func getFolderEntrance(pthFolder string) string {
 }
 
 func buildContracts(cpos string) {
-	
-	pthSrc := fmt.Sprintf("%s/src/main.sol", cpos)
+	pthBuildConf := fmt.Sprintf("%s/build.json", cpos)
+	fmt.Println(pthBuildConf)
+	dataConf, _ := ioutil.ReadFile(pthBuildConf)
+	fmt.Println(dataConf)
+	var dat buildConf
+	json.Unmarshal(dataConf, &dat)
 
+	fmt.Println(dat)
 
+	for _, contractName := range dat.Exports {
+		pthSrc := fmt.Sprintf("%s/src/%s.sol", cpos, contractName)
+		pthOut := fmt.Sprintf("%s/out/%s.bundle.sol", cpos, contractName)
+		code := readContracts(pthSrc, 0)
+		outputDistCode(code, pthOut);
+	} 
+}
 
-	code := readContracts(pthSrc, 0)
+func outputDistCode(code string, pthOut string) { 
 	regpragma := regexp.MustCompile(`pragma.+;`) 
 	regcontinuesn := regexp.MustCompile(`[\n]+`) 
 	imports := regpragma.FindAllString(code, -1)
@@ -89,9 +106,7 @@ func buildContracts(cpos string) {
 	code = imports[0] + regpragma.ReplaceAllString(code, "") 
 	code = regcontinuesn.ReplaceAllString(code, "\n")
 
-	fmt.Println("\n  ======\nCode Generated \n  ======\n" + code)
-
-	pthOut := fmt.Sprintf("%s/out/compiled.sol", cpos)
+	fmt.Println("\n  ======\nCode Generated \n  ======\n" + code) 
 	ioutil.WriteFile(pthOut, []byte(code), 0644)
 }
 
